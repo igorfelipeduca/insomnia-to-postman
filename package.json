@@ -1,0 +1,47 @@
+{
+  "name": "insomnia-to-postman",
+  "version": "1.0.4",
+  "description": "CLI tool to convert Insomnia collections to Postman format",
+  "main": "dist/index.js",
+  "bin": {
+    "insomnia-to-postman": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "build": "tsc",
+    "prepare": "pnpm build",
+    "prepublishOnly": "pnpm build"
+  },
+  "keywords": [
+    "insomnia",
+    "postman",
+    "converter",
+    "api",
+    "collection"
+  ],
+  "author": "",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/igorfelipeduca/insomnia-to-postman"
+  },
+  "dependencies": {
+    "commander": "^11.1.0",
+    "fs-extra": "^11.2.0",
+    "js-yaml": "^4.1.0",
+    "ts-node": "^10.9.2",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/js-yaml": "^4.0.9",
+    "typescript": "^5.3.3"
+  }
+}
