@@ -95,13 +95,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the ISC License.
-
----
-
-Let me know if you'd like further adjustments or additional sections!
-
----
-Answer from Perplexity: pplx.ai/share
+This project is licensed under the MIT License.
 
 
