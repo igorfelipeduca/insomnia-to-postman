@@ -35,9 +35,32 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseInsomniaCollection = void 0;
 const yaml = __importStar(require("js-yaml"));
-const parseInsomniaCollection = (collection) => {
-    const collectionJSON = yaml.load(collection);
-    return collectionJSON;
+const parseInsomniaCollection = (collection, fileExtension = '') => {
+    try {
+        // Try parsing as JSON first if extension is .json
+        if (fileExtension.toLowerCase() === '.json') {
+            return JSON.parse(collection);
+        }
+        // Try parsing as YAML (default)
+        return yaml.load(collection);
+    }
+    catch (error) {
+        // If parsing fails with the detected format, try the alternative format
+        try {
+            if (fileExtension.toLowerCase() === '.json') {
+                // If JSON parsing failed, try YAML
+                return yaml.load(collection);
+            }
+            else {
+                // If YAML parsing failed, try JSON
+                return JSON.parse(collection);
+            }
+        }
+        catch (secondError) {
+            // If both parsing methods fail, throw the original error
+            throw new Error(`Failed to parse Insomnia collection: ${error.message}`);
+        }
+    }
 };
 exports.parseInsomniaCollection = parseInsomniaCollection;
 //# sourceMappingURL=parse-insomnia-collection.js.map

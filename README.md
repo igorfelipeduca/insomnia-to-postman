@@ -1,10 +1,10 @@
 # Insomnia to Postman Converter
 
-This project provides a simple way to convert Insomnia Collection YAML files into Postman v2.1.0 Collection JSON format. It maintains all request details including headers, body, authentication and other settings.
+This project provides a simple way to convert Insomnia Collection files (YAML or JSON) into Postman v2.1.0 Collection JSON format. It maintains all request details including headers, body, authentication and other settings.
 
 ## Features
 
-- Converts Insomnia YAML to Postman JSON format
+- Converts Insomnia YAML or JSON to Postman JSON format
 - Preserves request metadata, headers and body
 - Maintains folder structure and request organization
 - Supports authentication settings
@@ -16,6 +16,12 @@ You can install the CLI globally using npm:
 
 ```bash
 npm install -g insomnia-to-postman
+```
+
+Or using yarn:
+
+```bash
+yarn global add insomnia-to-postman
 ```
 
 Or using pnpm:
@@ -30,18 +36,24 @@ After installation, you can use the CLI in two ways:
 
 1. Using the global command:
 ```bash
-insomnia-to-postman <input-file.yaml> <output-file.json>
+insomnia-to-postman <input-file.yaml|input-file.json> [output-file.json]
 ```
 
 2. Using npx:
 ```bash
-npx insomnia-to-postman <input-file.yaml> <output-file.json>
+npx insomnia-to-postman <input-file.yaml|input-file.json> [output-file.json]
 ```
 
-Example:
+Examples:
 ```bash
+# Convert YAML collection
 insomnia-to-postman ./my-collection.yaml ./my-collection.postman_collection.json
+
+# Convert JSON collection
+insomnia-to-postman ./my-collection.json ./my-collection.postman_collection.json
 ```
+
+If you don't specify an output file, the tool will automatically create one in the same directory as the input file with the `.postman_collection.json` extension.
 
 ## Development
 
@@ -54,17 +66,17 @@ git clone https://github.com/igorfelipeduca/insomnia-to-postman.git
 
 2. Install dependencies:
 ```bash
-pnpm install
+yarn install
 ```
 
 3. Build the project:
 ```bash
-pnpm build
+yarn build
 ```
 
 4. For development with auto-reload:
 ```bash
-pnpm dev
+yarn dev
 ```
 
 ## Importing the Postman Collection
@@ -80,7 +92,7 @@ Once the conversion is complete, you can import the generated Postman collection
 
 If you encounter any issues:
 
-- Make sure your Insomnia collection file is valid YAML and has a `.yaml` extension
+- Make sure your Insomnia collection file is valid (YAML or JSON)
 - Check that the input file path is correct
 - Ensure you have write permissions in the output directory
 - For global command issues, try reinstalling the package:

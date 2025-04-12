@@ -13,30 +13,32 @@ const program = new commander_1.Command();
 program
     .name("insomnia-to-postman")
     .description("Convert Insomnia collection to Postman format")
-    .version("1.0.1")
-    .argument("<input>", "Input Insomnia collection file (YAML)")
+    .version("1.0.5")
+    .argument("<input>", "Input Insomnia collection file (YAML or JSON)")
     .argument("[output]", "Output Postman collection file (JSON)")
     .option("-o, --output <file>", "Output Postman collection file (JSON)")
     .action(async (input, output, options) => {
     try {
         // Resolve absolute paths
         const inputPath = path_1.default.resolve(input);
-        // Use positional output argument if provided, then option, then default
-        const outputFile = output ||
-            options.output ||
-            input.replace(/\.ya?ml$/, ".postman_collection.json");
-        const outputPath = path_1.default.resolve(outputFile);
         // Ensure input file exists
         if (!fs_extra_1.default.existsSync(inputPath)) {
             console.error(`Error: Input file ${input} does not exist`);
             process.exit(1);
         }
+        // Extract file extension for format detection
+        const fileExtension = path_1.default.extname(inputPath).toLowerCase();
+        // Use positional output argument if provided, then option, then default
+        const outputFile = output ||
+            options.output ||
+            inputPath.replace(/\.(ya?ml|json)$/i, ".postman_collection.json");
+        const outputPath = path_1.default.resolve(outputFile);
         // Create output directory if it doesn't exist
         const outputDir = path_1.default.dirname(outputPath);
         await fs_extra_1.default.ensureDir(outputDir);
         // Read and convert
         const collectionFileContent = await fs_extra_1.default.readFile(inputPath, "utf8");
-        const insomniaCollection = (0, parse_insomnia_collection_1.parseInsomniaCollection)(collectionFileContent);
+        const insomniaCollection = (0, parse_insomnia_collection_1.parseInsomniaCollection)(collectionFileContent, fileExtension);
         const postmanCollection = (0, insomnia_to_postman_1.insomniaToPostman)(insomniaCollection);
         // Write output
         await fs_extra_1.default.writeFile(outputPath, JSON.stringify(postmanCollection.parsedCollection, null, 2));
