@@ -7,6 +7,20 @@ export const insomniaToPostman = (
 ): PostmanCollectionDTO => {
   // Handle old Insomnia collection format
   if (insomniaCollection._type === "export" && insomniaCollection.resources) {
+    // Extract environment variables from Insomnia resources
+    const envResources = insomniaCollection.resources.filter(
+      (r) => r._type === "environment" && r.data
+    );
+
+    const variables = envResources.reduce((acc, env) => {
+      const envVars = Object.entries(env.data || {}).map(([key, value]) => ({
+        key,
+        value: value as string,
+        type: "string"
+      }));
+      return [...acc, ...envVars];
+    }, [] as Array<{key: string, value: string, type: string}>);
+
     const folderResources = insomniaCollection.resources.filter(
       (r) => r._type === "request_group"
     );
@@ -40,12 +54,14 @@ export const insomniaToPostman = (
                     raw: req.body.text || "",
                     options: {
                       raw: {
-                        language:
-                          req.body.mimeType === "application/json"
-                            ? "json"
-                            : "text",
-                      },
-                    },
+                        language: req.headers?.some(
+                          h => h.name.toLowerCase() === "content-type" && 
+                              h.value.toLowerCase().includes("application/json")
+                        ) || req.body.mimeType === "application/json"
+                          ? "json"
+                          : "text"
+                      }
+                    }
                   }
                 : undefined,
               url: {
@@ -70,7 +86,7 @@ export const insomniaToPostman = (
         ],
       },
       event: [],
-      variable: [],
+      variable: variables,
     });
 
     return postmanCollection;
@@ -114,12 +130,14 @@ export const insomniaToPostman = (
                   raw: item.body?.text ?? "",
                   options: {
                     raw: {
-                      language:
-                        item.body.mimeType === "application/json"
-                          ? "json"
-                          : "text",
-                    },
-                  },
+                      language: (item.headers || []).some(
+                        header => typeof header === "string" && 
+                                header.toLowerCase().includes("content-type: application/json")
+                      ) || item.body.mimeType === "application/json"
+                        ? "json"
+                        : "text"
+                    }
+                  }
                 }
               : undefined,
             url: {
@@ -144,7 +162,13 @@ export const insomniaToPostman = (
       ],
     },
     event: [],
-    variable: [],
+    variable: insomniaCollection.environments?.[0]?.data 
+      ? Object.entries(insomniaCollection.environments[0].data).map(([key, value]) => ({
+          key,
+          value: value as string,
+          type: "string"
+        }))
+      : [],
   });
 
   return postmanCollection;

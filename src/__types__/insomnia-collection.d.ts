@@ -8,6 +8,7 @@ export type InsomniaCollection = {
   __export_date?: string;
   __export_source?: string;
   resources?: AsaasResource[];
+  environments?: Array<{data: Record<string, string>}>;
 };
 
 export type InnerCollection = {
@@ -93,4 +94,5 @@ export type AsaasResource = {
   _type: string;
   environment?: Record<string, string>;
   environmentPropertyOrder?: { "&": string[] } | null;
+  data?: Record<string, string>;
 };

@@ -11,7 +11,7 @@ const program = new Command();
 program
   .name("insomnia-to-postman")
   .description("Convert Insomnia collection to Postman format")
-  .version("1.0.6")
+  .version("1.0.7")
   .argument("<input>", "Input Insomnia collection file (YAML or JSON)")
   .argument("[output]", "Output Postman collection file (JSON)")
   .option("-o, --output <file>", "Output Postman collection file (JSON)")
