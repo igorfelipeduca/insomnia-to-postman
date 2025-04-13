@@ -5,13 +5,85 @@ import { PostmanCollectionDTO } from "../dtos/postman-collection.dto";
 export const insomniaToPostman = (
   insomniaCollection: InsomniaCollection
 ): PostmanCollectionDTO => {
+  // Handle old Insomnia collection format
+  if (insomniaCollection._type === "export" && insomniaCollection.resources) {
+    const folderResources = insomniaCollection.resources.filter(
+      (r) => r._type === "request_group"
+    );
+    const requestResources = insomniaCollection.resources.filter(
+      (r) => r._type === "request"
+    );
+
+    const postmanCollection = new PostmanCollectionDTO({
+      info: {
+        name: "Converted Collection",
+        schema:
+          "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      },
+      item: folderResources.map((folder) => {
+        const folderRequests = requestResources.filter(
+          (r) => r.parentId === folder._id
+        );
+        return {
+          name: folder.name,
+          item: folderRequests.map((req) => ({
+            name: req.name,
+            request: {
+              method: req.method || "GET",
+              header: (req.headers || []).map((header) => ({
+                key: header.name,
+                value: header.value,
+              })),
+              body: req.body
+                ? {
+                    mode: "raw",
+                    raw: req.body.text || "",
+                    options: {
+                      raw: {
+                        language:
+                          req.body.mimeType === "application/json"
+                            ? "json"
+                            : "text",
+                      },
+                    },
+                  }
+                : undefined,
+              url: {
+                raw: req.url,
+                host: [req.url],
+                path: [],
+              },
+            },
+            response: [],
+          })),
+          response: [],
+        };
+      }),
+      auth: {
+        type: "bearer",
+        bearer: [
+          {
+            key: "token",
+            value: "{{token}}",
+            type: "string",
+          },
+        ],
+      },
+      event: [],
+      variable: [],
+    });
+
+    return postmanCollection;
+  }
+
+  // Handle new Insomnia collection format
   const postmanCollection = new PostmanCollectionDTO({
     info: {
-      name: insomniaCollection.name,
+      name: insomniaCollection.name || "Converted Collection",
       schema:
         "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     },
-    item: insomniaCollection.collection.map((collection) => {
+    item: (insomniaCollection.collection || []).map((collection) => {
       return {
         name: collection.name,
         item: collection.children.map((item) => ({

@@ -19,16 +19,16 @@ program
     try {
       // Resolve absolute paths
       const inputPath = path.resolve(input);
-      
+
       // Ensure input file exists
       if (!fs.existsSync(inputPath)) {
         console.error(`Error: Input file ${input} does not exist`);
         process.exit(1);
       }
-      
+
       // Extract file extension for format detection
       const fileExtension = path.extname(inputPath).toLowerCase();
-      
+
       // Use positional output argument if provided, then option, then default
       const outputFile =
         output ||
@@ -42,7 +42,11 @@ program
 
       // Read and convert
       const collectionFileContent = await fs.readFile(inputPath, "utf8");
-      const insomniaCollection = parseInsomniaCollection(collectionFileContent, fileExtension);
+      const insomniaCollection = parseInsomniaCollection(
+        collectionFileContent,
+        fileExtension
+      );
+
       const postmanCollection = insomniaToPostman(insomniaCollection);
 
       // Write output
